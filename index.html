@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Generador de exámenes</title>
+    <style>
+      :root {
+        --bg: #fff4f8;
+        --panel: #ffffff;
+        --panel-alt: #fff0f5;
+        --line: #f1d7e2;
+        --primary: #e85d92;
+        --primary-dark: #b83268;
+        --primary-soft: #ffe4ef;
+        --success: #c43d75;
+        --success-soft: #ffe8f1;
+        --danger: #c43d63;
+        --warning: #d97891;
+        --text: #3d2631;
+        --muted: #765866;
+        --shadow: 0 18px 38px rgba(128, 43, 82, 0.14);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #fff0f5 0%, #fff9fb 45%, #ffe9f1 100%);
+        color: var(--text);
+      }
+
+      .legal-logo {
+        position: fixed;
+        top: 18px;
+        right: 24px;
+        z-index: 20;
+        width: 250px;
+        height: auto;
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 14px;
+        padding: 8px;
+        box-shadow: 0 10px 24px rgba(128, 43, 82, 0.16);
+      }
+
+      button,
+      input,
+      textarea,
+      select {
+        font: inherit;
+      }
+
+      .app-shell {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 145px 20px 48px;
+      }
+
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 24px;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+
+      .brand-mark {
+        width: 50px;
+        height: 50px;
+        border-radius: 14px;
+        display: grid;
+        place-items: center;
+        font-size: 1.65rem;
+        background: linear-gradient(135deg, #ffddea, #f5a9c6);
+        box-shadow: inset 0 0 0 1px rgba(232, 93, 146, 0.12);
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(2rem, 3vw, 2.8rem);
+        letter-spacing: -0.04em;
+      }
+
+      .status-pill {
+        background: var(--success-soft);
+        color: var(--success);
+        border: 1px solid rgba(196, 61, 117, 0.2);
+        border-radius: 999px;
+        padding: 10px 16px;
+        font-weight: 700;
+      }
+
+      .whatsapp-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: #d94f86;
+        color: white;
+        border-radius: 999px;
+        padding: 10px 16px;
+        font-weight: 700;
+        text-decoration: none;
+        transition: transform 0.15s ease, background 0.15s ease;
+      }
+
+      .whatsapp-button:hover {
+        background: #b83268;
+        transform: translateY(-1px);
+      }
+
+      .whatsapp-float {
+        position: fixed;
+        right: 24px;
+        bottom: 24px;
+        z-index: 10;
+        box-shadow: 0 10px 24px rgba(128, 43, 82, 0.24);
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 24px;
+      }
+
+      .panel {
+        background: rgba(255, 255, 255, 0.84);
+        border: 1px solid var(--line);
+        box-shadow: var(--shadow);
+        border-radius: 22px;
+        padding: 22px;
+        backdrop-filter: blur(7px);
+      }
+
+      .panel h2 {
+        margin: 0 0 16px;
+        font-size: 1.35rem;
+      }
+
+      form {
+        display: grid;
+        gap: 16px;
+      }
+
+      .field {
+        display: grid;
+        gap: 8px;
+      }
+
+      label {
+        font-weight: 700;
+        color: var(--text);
+      }
+
+      input,
+      textarea,
+      select {
+        width: 100%;
+        border: 1px solid var(--line);
+        background: #fffafd;
+        border-radius: 12px;
+        padding: 12px 14px;
+        color: var(--text);
+      }
+
+      textarea {
+        resize: vertical;
+        min-height: 90px;
+      }
+
+      input:focus,
+      textarea:focus,
+      select:focus {
+        outline: 3px solid rgba(232, 93, 146, 0.16);
+        border-color: var(--primary);
+      }
+
+      .question-builder {
+        margin-top: 18px;
+        padding-top: 18px;
+        border-top: 1px solid var(--line);
+      }
+
+      .question-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+
+      .option-row {
+        display: grid;
+        grid-template-columns: 36px 1fr 1fr;
+        gap: 10px;
+        align-items: center;
+      }
+
+      .option-label {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        background: var(--primary-soft);
+        display: grid;
+        place-items: center;
+        font-weight: 700;
+        color: var(--primary-dark);
+      }
+
+      .option-row input[type='radio'] {
+        width: auto;
+        justify-self: center;
+      }
+
+      .button-row {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 4px;
+      }
+
+      .saved-exams {
+        display: grid;
+        gap: 8px;
+      }
+
+      .saved-exam-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: #fffafd;
+      }
+
+      .saved-exam-item button {
+        border: none;
+        background: transparent;
+        color: var(--primary-dark);
+        font-weight: 700;
+        cursor: pointer;
+        padding: 0;
+      }
+
+      .saved-exam-item span {
+        color: var(--muted);
+        font-size: 0.82rem;
+      }
+
+      .button {
+        border: none;
+        border-radius: 12px;
+        padding: 12px 18px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: transform 0.15s ease, opacity 0.15s ease;
+      }
+
+      .button:hover {
+        transform: translateY(-1px);
+      }
+
+      .button.primary {
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        color: white;
+      }
+
+      .button.secondary {
+        background: #fff0f6;
+        color: var(--primary-dark);
+      }
+
+      .button.success {
+        background: linear-gradient(135deg, #ed78a5, #c43d75);
+        color: white;
+      }
+
+      .question-list {
+        margin-top: 20px;
+        display: grid;
+        gap: 12px;
+      }
+
+      .question-card {
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 14px 16px;
+        background: linear-gradient(180deg, #fffafd, #fff0f6);
+      }
+
+      .question-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        gap: 12px;
+        margin-bottom: 10px;
+      }
+
+      .question-title {
+        margin: 0;
+        font-size: 1.05rem;
+      }
+
+      .badge {
+        border-radius: 999px;
+        padding: 6px 10px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        background: var(--primary-soft);
+        color: var(--primary-dark);
+      }
+
+      .question-options {
+        display: grid;
+        gap: 6px;
+        color: var(--muted);
+        margin: 0;
+        padding-left: 18px;
+      }
+
+      .question-options li strong {
+        color: var(--text);
+      }
+
+      .student-panel {
+        display: grid;
+        gap: 18px;
+      }
+
+      .exam-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 10px;
+      }
+
+      .exam-title {
+        margin: 0;
+        font-size: clamp(1.6rem, 3vw, 2.2rem);
+        letter-spacing: -0.04em;
+      }
+
+      .exam-meta {
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+
+      .exam-summary {
+        background: linear-gradient(135deg, #fff3f7, #ffe9f1);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 18px;
+      }
+
+      .exam-summary p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      .score-box {
+        display: none;
+        background: var(--success-soft);
+        border: 1px solid rgba(196, 61, 117, 0.22);
+        color: var(--success);
+        border-radius: 16px;
+        padding: 18px;
+        font-weight: 700;
+      }
+
+      .score-box.visible {
+        display: block;
+      }
+
+      .quiz-area {
+        display: none;
+      }
+
+      .quiz-area.visible {
+        display: block;
+      }
+
+      .progress {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 18px;
+        color: var(--muted);
+        font-weight: 600;
+      }
+
+      .progress-bar {
+        flex: 1;
+        height: 8px;
+        border-radius: 999px;
+        background: #ffe8f1;
+        overflow: hidden;
+      }
+
+      .progress-bar > span {
+        display: block;
+        height: 100%;
+        width: 0;
+        background: linear-gradient(90deg, var(--primary), #f39abd);
+        border-radius: inherit;
+      }
+
+      .question-prompt {
+        margin: 0 0 14px;
+        font-size: 1.2rem;
+        line-height: 1.4;
+      }
+
+      .answer-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        gap: 10px;
+      }
+
+      .answer-option {
+        width: 100%;
+        text-align: left;
+        padding: 14px 16px;
+        border-radius: 12px;
+        border: 1px solid var(--line);
+        background: white;
+        color: var(--text);
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      .answer-option.selected {
+        border-color: var(--primary);
+        background: var(--primary-soft);
+        box-shadow: inset 0 0 0 1px rgba(232, 93, 146, 0.14);
+      }
+
+      .quiz-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        margin-top: 18px;
+      }
+
+      .muted {
+        color: var(--muted);
+      }
+
+      .hidden {
+        display: none !important;
+      }
+
+      @media (max-width: 920px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 560px) {
+        .topbar {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .legal-logo {
+          top: 12px;
+          right: 12px;
+          width: 190px;
+        }
+
+        .app-shell {
+          padding-top: 125px;
+        }
+
+        .question-grid,
+        .option-row {
+          grid-template-columns: 1fr;
+        }
+
+        .option-row {
+          gap: 8px;
+        }
+
+        .option-label {
+          width: 32px;
+          height: 32px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <img class="legal-logo" src="LOGO.PNG.png" alt="VJ.S Corporativo Legal: especialistas en la tenencia de la tierra" />
+
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="brand">
+          <div class="brand-mark">📝</div>
+          <h1>Generador de exámenes</h1>
+        </div>
+        <div class="button-row">
+          <div class="status-pill">Modo formulario + prueba</div>
+          <a
+            class="whatsapp-button"
+            href="https://wa.me/526141972032?text=Hola%2C%20quiero%20informaci%C3%B3n%20sobre%20el%20examen."
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Contactar por WhatsApp"
+          >+52 614 197 2032</a>
+        </div>
+      </header>
+
+      <main class="layout">
+        <section class="panel">
+          <h2>Crear examen</h2>
+
+          <form id="examForm">
+            <div class="field">
+              <label for="examTitle">Nombre del examen</label>
+              <input id="examTitle" type="text" value="Examen de historia" placeholder="Título del examen" />
+            </div>
+
+            <div class="field">
+              <label for="examDescription">Descripción</label>
+              <textarea id="examDescription" placeholder="Describe para qué sirve este examen">Comprueba tus conocimientos básicos de historia mundial.</textarea>
+            </div>
+
+            <div class="question-builder">
+              <h2>Pregunta nueva</h2>
+
+              <div class="field">
+                <label for="questionText">Enunciado</label>
+                <input id="questionText" type="text" placeholder="Escribe la pregunta" />
+              </div>
+
+              <div class="question-grid">
+                <div class="field">
+                  <label for="answerA">Opción A</label>
+                  <input id="answerA" type="text" placeholder="Respuesta A" />
+                </div>
+                <div class="field">
+                  <label for="answerB">Opción B</label>
+                  <input id="answerB" type="text" placeholder="Respuesta B" />
+                </div>
+                <div class="field">
+                  <label for="answerC">Opción C</label>
+                  <input id="answerC" type="text" placeholder="Respuesta C" />
+                </div>
+                <div class="field">
+                  <label for="answerD">Opción D</label>
+                  <input id="answerD" type="text" placeholder="Respuesta D" />
+                </div>
+              </div>
+
+              <div class="field">
+                <label for="correctAnswer">Respuesta correcta</label>
+                <select id="correctAnswer">
+                  <option value="A">A</option>
+                  <option value="B">B</option>
+                  <option value="C">C</option>
+                  <option value="D">D</option>
+                </select>
+              </div>
+
+              <div class="button-row">
+                <button type="button" class="button primary" id="addQuestionBtn">Agregar pregunta</button>
+                <button type="button" class="button secondary" id="resetExamBtn">Reiniciar</button>
+              </div>
+            </div>
+          </form>
+
+          <div class="question-list" id="questionList"></div>
+
+          <div class="field">
+            <label>Exámenes guardados</label>
+            <div class="saved-exams" id="savedExams"></div>
+          </div>
+
+          <div class="button-row" style="margin-top: 18px;">
+            <button type="button" class="button success" id="saveExamBtn">Guardar examen</button>
+          </div>
+        </section>
+
+        <section class="panel student-panel">
+          <div class="exam-header">
+            <div>
+              <div class="exam-meta">Vista de usuario</div>
+              <h2 class="exam-title" id="examTitlePreview">Examen de historia</h2>
+            </div>
+            <button type="button" class="button secondary" id="restartQuizBtn">Reiniciar prueba</button>
+          </div>
+
+          <div class="exam-summary" id="examIntro">
+            <p id="examDescriptionPreview">Comprueba tus conocimientos básicos de historia mundial.</p>
+          </div>
+
+          <div class="score-box" id="scoreBox"></div>
+
+          <div class="quiz-area" id="quizArea">
+            <div class="progress">
+              <span id="progressText">Pregunta 1 de 3</span>
+              <div class="progress-bar"><span id="progressBar"></span></div>
+            </div>
+
+            <h3 class="question-prompt" id="currentQuestionText"></h3>
+            <ul class="answer-list" id="answerList"></ul>
+
+            <div class="quiz-actions">
+              <span class="muted" id="answerStatus">Selecciona una respuesta</span>
+              <button type="button" class="button primary" id="nextQuestionBtn">Siguiente</button>
+            </div>
+          </div>
+
+          <div class="button-row" id="startQuizRow">
+            <button type="button" class="button primary" id="startQuizBtn">Comenzar prueba</button>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <a
+      class="whatsapp-button whatsapp-float"
+      href="https://wa.me/526141972032?text=Hola%2C%20quiero%20informaci%C3%B3n%20sobre%20el%20examen."
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Abrir conversación en WhatsApp"
+      title="Abrir WhatsApp"
+    >+52 614 197 2032</a>
+
+    <script>
+      const defaultExam = {
+        title: 'Examen de historia',
+        description: 'Comprueba tus conocimientos básicos de historia mundial.',
+        questions: [
+          {
+            text: '¿En qué año terminó la Segunda Guerra Mundial?',
+            options: ['1943', '1945', '1950', '1939'],
+            correct: 'B'
+          },
+          {
+            text: '¿Quién fue el primer presidente de los Estados Unidos?',
+            options: ['Thomas Jefferson', 'George Washington', 'Abraham Lincoln', 'John Adams'],
+            correct: 'B'
+          },
+          {
+            text: '¿Cuál civilización construyó Machu Picchu?',
+            options: ['Romanos', 'Mayas', 'Incas', 'Vikings'],
+            correct: 'C'
+          }
+        ]
+      };
+
+      const state = {
+        exam: null,
+        currentIndex: 0,
+        answers: [],
+        started: false,
+        done: false
+      };
+
+      const examTitleInput = document.getElementById('examTitle');
+      const examDescriptionInput = document.getElementById('examDescription');
+      const examTitlePreview = document.getElementById('examTitlePreview');
+      const examDescriptionPreview = document.getElementById('examDescriptionPreview');
+      const questionList = document.getElementById('questionList');
+      const questionTextInput = document.getElementById('questionText');
+      const answerAInput = document.getElementById('answerA');
+      const answerBInput = document.getElementById('answerB');
+      const answerCInput = document.getElementById('answerC');
+      const answerDInput = document.getElementById('answerD');
+      const correctAnswerSelect = document.getElementById('correctAnswer');
+      const scoreBox = document.getElementById('scoreBox');
+      const quizArea = document.getElementById('quizArea');
+      const startQuizRow = document.getElementById('startQuizRow');
+      const answerList = document.getElementById('answerList');
+      const currentQuestionText = document.getElementById('currentQuestionText');
+      const progressText = document.getElementById('progressText');
+      const progressBar = document.getElementById('progressBar');
+      const answerStatus = document.getElementById('answerStatus');
+      const examIntro = document.getElementById('examIntro');
+      const savedExamsContainer = document.getElementById('savedExams');
+
+      function normalizeQuestion(question) {
+        if (!question || typeof question !== 'object') {
+          return null;
+        }
+
+        const options = Array.isArray(question.options) ? question.options.slice(0, 4).map((option) => String(option || '').trim()) : [];
+        if (options.length < 4) {
+          return null;
+        }
+
+        const normalizedCorrect = typeof question.correct === 'string' ? question.correct.toUpperCase() : 'A';
+        if (!['A', 'B', 'C', 'D'].includes(normalizedCorrect)) {
+          return null;
+        }
+
+        return {
+          text: String(question.text || '').trim(),
+          options: options,
+          correct: normalizedCorrect
+        };
+      }
+
+      function normalizeExam(exam) {
+        if (!exam || typeof exam !== 'object') {
+          return null;
+        }
+
+        const questions = Array.isArray(exam.questions)
+          ? exam.questions.map(normalizeQuestion).filter(Boolean)
+          : [];
+
+        if (questions.length === 0) {
+          return null;
+        }
+
+        return {
+          title: String(exam.title || 'Examen sin título').trim() || 'Examen sin título',
+          description: String(exam.description || 'Sin descripción').trim() || 'Sin descripción',
+          questions
+        };
+      }
+
+      function readSavedExams() {
+        try {
+          const storedExams = localStorage.getItem('exams');
+          if (!storedExams) {
+            return [];
+          }
+
+          const parsed = JSON.parse(storedExams);
+          if (!Array.isArray(parsed)) {
+            return [];
+          }
+
+          return parsed
+            .map(normalizeExam)
+            .filter(Boolean)
+            .slice(0, 10);
+        } catch (error) {
+          console.warn('No se pudieron leer los exámenes guardados:', error);
+          return [];
+        }
+      }
+
+      function renderSavedExams() {
+        const savedExams = readSavedExams();
+
+        if (!savedExams.length) {
+          savedExamsContainer.innerHTML = '<p class="muted">No hay exámenes guardados todavía.</p>';
+          return;
+        }
+
+        savedExamsContainer.innerHTML = savedExams
+          .map((exam, index) => `
+            <div class="saved-exam-item">
+              <div>
+                <strong>${exam.title}</strong>
+                <span> · ${exam.questions.length} preguntas</span>
+              </div>
+              <button type="button" data-load-index="${index}">Cargar</button>
+            </div>
+          `)
+          .join('');
+
+        savedExamsContainer.querySelectorAll('[data-load-index]').forEach((button) => {
+          button.addEventListener('click', () => {
+            const selectedExam = savedExams[Number(button.dataset.loadIndex)];
+            if (!selectedExam) {
+              return;
+            }
+
+            state.exam = JSON.parse(JSON.stringify(selectedExam));
+            examTitleInput.value = state.exam.title;
+            examDescriptionInput.value = state.exam.description;
+            syncExamDescription();
+            renderQuestionList();
+            initializeQuizFromCurrentExam();
+          });
+        });
+      }
+
+      function ensureExamState() {
+        if (!state.exam) {
+          const savedExams = readSavedExams();
+          state.exam = savedExams[0] ? JSON.parse(JSON.stringify(savedExams[0])) : JSON.parse(JSON.stringify(defaultExam));
+        }
+      }
+
+      function syncExamDescription() {
+        ensureExamState();
+        state.exam.title = examTitleInput.value.trim() || 'Examen sin título';
+        state.exam.description = examDescriptionInput.value.trim() || 'Sin descripción';
+        examTitlePreview.textContent = state.exam.title;
+        examDescriptionPreview.textContent = state.exam.description;
+      }
+
+      function questionCardMarkup(question, index) {
+        return `
+          <article class="question-card">
+            <div class="question-head">
+              <h3 class="question-title">Pregunta ${index + 1}: ${question.text}</h3>
+              <span class="badge">${question.correct}</span>
+            </div>
+            <ol class="question-options">
+              ${question.options.map((option, optionIndex) => `<li><strong>${String.fromCharCode(65 + optionIndex)}.</strong> ${option}</li>`).join('')}
+            </ol>
+          </article>
+        `;
+      }
+
+      function renderQuestionList() {
+        ensureExamState();
+        questionList.innerHTML = state.exam.questions.length
+          ? state.exam.questions.map(questionCardMarkup).join('')
+          : '<p class="muted">Todavía no hay preguntas en este examen.</p>';
+      }
+
+      function resetQuestionForm() {
+        questionTextInput.value = '';
+        answerAInput.value = '';
+        answerBInput.value = '';
+        answerCInput.value = '';
+        answerDInput.value = '';
+        correctAnswerSelect.value = 'A';
+      }
+
+      function addQuestion() {
+        ensureExamState();
+
+        const questionText = questionTextInput.value.trim();
+        const options = [
+          answerAInput.value.trim(),
+          answerBInput.value.trim(),
+          answerCInput.value.trim(),
+          answerDInput.value.trim()
+        ];
+
+        if (!questionText || options.some((option) => !option)) {
+          alert('Completa el enunciado y las cuatro opciones antes de guardar la pregunta.');
+          return;
+        }
+
+        state.exam.questions.push({
+          text: questionText,
+          options,
+          correct: correctAnswerSelect.value
+        });
+
+        renderQuestionList();
+        resetQuestionForm();
+      }
+
+      function saveExam() {
+        ensureExamState();
+        syncExamDescription();
+
+        if (state.exam.questions.length === 0) {
+          alert('Debes agregar al menos una pregunta antes de guardar el examen.');
+          return;
+        }
+
+        const savedExams = readSavedExams();
+        const currentExam = normalizeExam(state.exam);
+
+        if (!currentExam) {
+          alert('El examen actual no tiene un formato válido para guardar.');
+          return;
+        }
+
+        const existingIndex = savedExams.findIndex((exam) => exam.title === currentExam.title && exam.description === currentExam.description);
+
+        if (existingIndex >= 0) {
+          savedExams.splice(existingIndex, 1);
+        }
+
+        savedExams.unshift(currentExam);
+        localStorage.setItem('exams', JSON.stringify(savedExams.slice(0, 10)));
+        renderSavedExams();
+        alert('Examen guardado correctamente.');
+        initializeQuizFromCurrentExam();
+      }
+
+      function initializeQuizFromCurrentExam() {
+        ensureExamState();
+        syncExamDescription();
+        renderQuestionList();
+        state.answers = [];
+        state.currentIndex = 0;
+        state.started = false;
+        state.done = false;
+        answerStatus.textContent = 'Selecciona una respuesta';
+        scoreBox.classList.remove('visible');
+        scoreBox.textContent = '';
+        quizArea.classList.remove('visible');
+        startQuizRow.classList.remove('hidden');
+        examIntro.classList.remove('hidden');
+        renderCurrentQuestion();
+      }
+
+      function renderCurrentQuestion() {
+        if (!state.exam || state.exam.questions.length === 0) {
+          currentQuestionText.textContent = 'No hay preguntas disponibles';
+          answerList.innerHTML = '';
+          progressText.textContent = 'Pregunta 0 de 0';
+          progressBar.style.width = '0%';
+          return;
+        }
+
+        const question = state.exam.questions[state.currentIndex];
+        const selectedAnswer = state.answers[state.currentIndex] || '';
+        currentQuestionText.textContent = `${state.currentIndex + 1}. ${question.text}`;
+        progressText.textContent = `Pregunta ${state.currentIndex + 1} de ${state.exam.questions.length}`;
+        progressBar.style.width = `${((state.currentIndex + 1) / state.exam.questions.length) * 100}%`;
+
+        answerList.innerHTML = question.options
+          .map((option, index) => {
+            const letter = String.fromCharCode(65 + index);
+            const selectedClass = selectedAnswer === letter ? 'selected' : '';
+            return `<li><button type="button" class="answer-option ${selectedClass}" data-letter="${letter}">${letter}. ${option}</button></li>`;
+          })
+          .join('');
+
+        answerList.querySelectorAll('.answer-option').forEach((button) => {
+          button.addEventListener('click', () => {
+            const chosen = button.dataset.letter;
+            state.answers[state.currentIndex] = chosen;
+            answerStatus.textContent = `Has elegido la opción ${chosen}`;
+            renderCurrentQuestion();
+          });
+        });
+      }
+
+      function goToNextQuestion() {
+        if (!state.started) return;
+
+        if (!state.answers[state.currentIndex]) {
+          answerStatus.textContent = 'Debes responder la pregunta antes de continuar.';
+          return;
+        }
+
+        if (state.currentIndex < state.exam.questions.length - 1) {
+          state.currentIndex += 1;
+          renderCurrentQuestion();
+          answerStatus.textContent = 'Selecciona una respuesta';
+          return;
+        }
+
+        finishQuiz();
+      }
+
+      function finishQuiz() {
+        state.done = true;
+        state.started = false;
+        const total = state.exam.questions.length;
+        const correct = state.exam.questions.reduce((count, question, index) => {
+          return count + (state.answers[index] === question.correct ? 1 : 0);
+        }, 0);
+        const percentage = Math.round((correct / total) * 100);
+
+        scoreBox.textContent = `Resultado final: ${correct}/${total} respuestas correctas (${percentage}%)`;
+        scoreBox.classList.add('visible');
+        quizArea.classList.remove('visible');
+        startQuizRow.classList.remove('hidden');
+        examIntro.classList.remove('hidden');
+        answerStatus.textContent = 'Prueba completada';
+      }
+
+      function startQuiz() {
+        ensureExamState();
+        if (state.exam.questions.length === 0) {
+          alert('Primero crea al menos una pregunta para poder realizar la prueba.');
+          return;
+        }
+
+        state.currentIndex = 0;
+        state.answers = new Array(state.exam.questions.length).fill('');
+        state.started = true;
+        state.done = false;
+        scoreBox.classList.remove('visible');
+        scoreBox.textContent = '';
+        examIntro.classList.add('hidden');
+        startQuizRow.classList.add('hidden');
+        quizArea.classList.add('visible');
+        renderCurrentQuestion();
+      }
+
+      function resetExam() {
+        const savedExams = readSavedExams();
+        state.exam = savedExams[0] ? JSON.parse(JSON.stringify(savedExams[0])) : JSON.parse(JSON.stringify(defaultExam));
+        examTitleInput.value = state.exam.title;
+        examDescriptionInput.value = state.exam.description;
+        resetQuestionForm();
+        initializeQuizFromCurrentExam();
+      }
+
+      document.getElementById('addQuestionBtn').addEventListener('click', addQuestion);
+      document.getElementById('saveExamBtn').addEventListener('click', saveExam);
+      document.getElementById('startQuizBtn').addEventListener('click', startQuiz);
+      document.getElementById('nextQuestionBtn').addEventListener('click', goToNextQuestion);
+      document.getElementById('restartQuizBtn').addEventListener('click', initializeQuizFromCurrentExam);
+      document.getElementById('resetExamBtn').addEventListener('click', resetExam);
+
+      examTitleInput.addEventListener('input', syncExamDescription);
+      examDescriptionInput.addEventListener('input', syncExamDescription);
+
+      renderSavedExams();
+      resetExam();
+    </script>
+  </body>
+</html>
