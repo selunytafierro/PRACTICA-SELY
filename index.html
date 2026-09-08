@@ -6,20 +6,21 @@
     <title>Generador de exámenes</title>
     <style>
       :root {
-        --bg: #fff4f8;
-        --panel: #ffffff;
+        --bg: #fff5f8;
+        --panel: rgba(255, 255, 255, 0.9);
         --panel-alt: #fff0f5;
         --line: #f1d7e2;
         --primary: #e85d92;
         --primary-dark: #b83268;
         --primary-soft: #ffe4ef;
+        --primary-strong: #f87ca8;
         --success: #c43d75;
         --success-soft: #ffe8f1;
         --danger: #c43d63;
         --warning: #d97891;
         --text: #3d2631;
         --muted: #765866;
-        --shadow: 0 18px 38px rgba(128, 43, 82, 0.14);
+        --shadow: 0 22px 44px rgba(128, 43, 82, 0.12);
       }
 
       * {
@@ -30,7 +31,10 @@
         margin: 0;
         min-height: 100vh;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background: linear-gradient(135deg, #fff0f5 0%, #fff9fb 45%, #ffe9f1 100%);
+        background:
+          radial-gradient(circle at top left, rgba(255, 214, 228, 0.8), transparent 28%),
+          radial-gradient(circle at bottom right, rgba(255, 189, 214, 0.7), transparent 32%),
+          linear-gradient(135deg, #fff0f5 0%, #fff9fb 46%, #ffe9f1 100%);
         color: var(--text);
       }
 
@@ -65,7 +69,7 @@
         justify-content: space-between;
         align-items: center;
         gap: 16px;
-        margin-bottom: 24px;
+        margin-bottom: 28px;
       }
 
       .brand {
@@ -75,29 +79,50 @@
       }
 
       .brand-mark {
-        width: 50px;
-        height: 50px;
-        border-radius: 14px;
+        width: 58px;
+        height: 58px;
+        border-radius: 18px;
         display: grid;
         place-items: center;
-        font-size: 1.65rem;
-        background: linear-gradient(135deg, #ffddea, #f5a9c6);
-        box-shadow: inset 0 0 0 1px rgba(232, 93, 146, 0.12);
+        font-size: 1.8rem;
+        background: linear-gradient(135deg, #ffddea, #f5a9c6 54%, #ef98b8);
+        box-shadow: inset 0 0 0 1px rgba(232, 93, 146, 0.12), 0 12px 18px rgba(201, 92, 137, 0.18);
+      }
+
+      .title-stack {
+        display: grid;
+        gap: 4px;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        width: fit-content;
+        padding: 5px 10px;
+        border-radius: 999px;
+        background: rgba(232, 93, 146, 0.08);
+        border: 1px solid rgba(232, 93, 146, 0.14);
+        color: var(--primary-dark);
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
       }
 
       h1 {
         margin: 0;
         font-size: clamp(2rem, 3vw, 2.8rem);
-        letter-spacing: -0.04em;
+        letter-spacing: -0.05em;
+        line-height: 1.04;
       }
 
       .status-pill {
-        background: var(--success-soft);
+        background: linear-gradient(135deg, #fff0f5, #ffe7f0);
         color: var(--success);
         border: 1px solid rgba(196, 61, 117, 0.2);
         border-radius: 999px;
         padding: 10px 16px;
         font-weight: 700;
+        box-shadow: inset 0 0 0 1px rgba(196, 61, 117, 0.05);
       }
 
       .whatsapp-button {
@@ -133,17 +158,17 @@
       }
 
       .panel {
-        background: rgba(255, 255, 255, 0.84);
-        border: 1px solid var(--line);
+        background: var(--panel);
+        border: 1px solid rgba(241, 215, 226, 0.9);
         box-shadow: var(--shadow);
-        border-radius: 22px;
-        padding: 22px;
-        backdrop-filter: blur(7px);
+        border-radius: 26px;
+        padding: 24px;
+        backdrop-filter: blur(8px);
       }
 
       .panel h2 {
         margin: 0 0 16px;
-        font-size: 1.35rem;
+        font-size: 1.38rem;
       }
 
       form {
@@ -262,7 +287,8 @@
         padding: 12px 18px;
         font-weight: 700;
         cursor: pointer;
-        transition: transform 0.15s ease, opacity 0.15s ease;
+        transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+        box-shadow: 0 8px 18px rgba(232, 93, 146, 0.12);
       }
 
       .button:hover {
@@ -280,7 +306,7 @@
       }
 
       .button.success {
-        background: linear-gradient(135deg, #ed78a5, #c43d75);
+        background: linear-gradient(135deg, #ef7ba4, #c43d75);
         color: white;
       }
 
@@ -356,16 +382,18 @@
       }
 
       .exam-summary {
-        background: linear-gradient(135deg, #fff3f7, #ffe9f1);
+        background: linear-gradient(135deg, rgba(255, 243, 247, 0.94), rgba(255, 233, 241, 0.95));
         border: 1px solid var(--line);
-        border-radius: 16px;
-        padding: 18px;
+        border-radius: 18px;
+        padding: 18px 20px;
+        box-shadow: inset 0 0 0 1px rgba(236, 129, 175, 0.08);
       }
 
       .exam-summary p {
         margin: 0;
         color: var(--muted);
-        line-height: 1.6;
+        line-height: 1.7;
+        font-size: 1rem;
       }
 
       .score-box {
@@ -509,7 +537,10 @@
       <header class="topbar">
         <div class="brand">
           <div class="brand-mark">📝</div>
-          <h1>Generador de exámenes</h1>
+          <div class="title-stack">
+            <span class="eyebrow">Herramienta educativa</span>
+            <h1>Generador de exámenes</h1>
+          </div>
         </div>
         <div class="button-row">
           <div class="status-pill">Modo formulario + prueba</div>
